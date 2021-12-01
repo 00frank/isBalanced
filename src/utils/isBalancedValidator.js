@@ -4,25 +4,30 @@
  */
 /* eslint import/no-anonymous-default-export: [2, {"allowArrowFunction": true}] */
 export default (message) => {
-  let chars = getMessageWithoutEmojis(message);
   let aux = [];
   let result = "balanceado";
 
-  for (const char of chars) {
-    if (char === "(") {
-      aux.push(char);
-    } else if (char === ")") {
-      if(aux.length === 0) {
-        result = "desbalanceado";
-        return;
-      } else {
-        aux.pop()
+  if (isClosedInParenthesis(message)) {
+    // is closed in parenthesis, so its balanced
+  } else {
+    let chars = getMessageWithoutEmojis(message);
+    console.log("chars elimnando primeros", chars);
+    for (const char of chars) {
+      if (char === "(") {
+        aux.push(char);
+      } else if (char === ")") {
+        if (aux.length === 0) {
+          result = "desbalanceado";
+          return;
+        } else {
+          aux.pop()
+        }
       }
     }
-  }
 
-  if (aux.length > 0) {
-    result = "desbalanceado";
+    if (aux.length > 0) {
+      result = "desbalanceado";
+    }
   }
 
   return result;
@@ -43,5 +48,14 @@ function getMessageWithoutEmojis(message) {
       result = result.replaceAll(emoji, "")
     }
   })
+
+  return result;
+}
+
+function isClosedInParenthesis(message) {
+  let result = false;
+  if (message[0] === "(" && message[message.length - 1] === ")")
+    result = true;
+
   return result;
 }
