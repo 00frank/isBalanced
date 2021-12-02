@@ -24,11 +24,11 @@ export default (message) => {
 
     let hasBefore = (chars[i - 1]);
     let nextIsTwoPoints = (chars[i + 1] && chars[i + 1] === ":");
-    let secondIsOpenOrClose = (chars[i + 2] && chars[i + 2] === ")") || (chars[i + 2] && chars[i + 2] === "(");
+    let secondIsClose = (chars[i + 2] && chars[i + 2] === ")");
     let thirdIsClose = (chars[i + 3] && chars[i + 3] === ")");
 
     if (char === "(") {
-      if (hasBefore && nextIsTwoPoints && secondIsOpenOrClose && thirdIsClose) {
+      if (hasBefore && nextIsTwoPoints && secondIsClose && thirdIsClose) {
         // (:)
         chars.splice(i, 1); //(
         chars.splice(i, 1); //:
