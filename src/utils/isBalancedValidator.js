@@ -1,35 +1,57 @@
+const Result = {
+  DESBALANCEADO: "desbalanceado",
+  BALANCEADO: "balanceado"
+}
+
 /**
  * @param {string} message - message to validate is or not balanced
  * @returns {boolean}
  */
 /* eslint import/no-anonymous-default-export: [2, {"allowArrowFunction": true}] */
 export default (message) => {
-  let aux = [];
-  let result = "balanceado";
+  let chars = [];
+  let result = Result.BALANCEADO;
 
-  if (isClosedInParenthesis(message)) {
-    // is closed in parenthesis, so its balanced
-  } else {
-    let chars = getMessageWithoutEmojis(message);
-    console.log("chars elimnando primeros", chars);
-    for (const char of chars) {
-      if (char === "(") {
-        aux.push(char);
-      } else if (char === ")") {
-        if (aux.length === 0) {
-          result = "desbalanceado";
-          return;
-        } else {
-          aux.pop()
-        }
-      }
-    }
-
-    if (aux.length > 0) {
-      result = "desbalanceado";
+  for (let i = 0; i < message.length; i++) {
+    const char = message[i];
+    if (char === "(" || char === ":" || char === ")") {
+      chars.push(char);
     }
   }
 
+  for (let i = 0; i < chars.length; i++) {
+    const char = chars[i];
+
+    let hasBefore = (chars[i - 1]);
+    let nextIsTwoPoints = (chars[i + 1] && chars[i + 1] === ":");
+    let secondIsOpenOrClose = (chars[i + 2] && chars[i + 2] === ")") || (chars[i + 2] && chars[i + 2] === "(");
+    let thirdIsClose = (chars[i + 3] && chars[i + 3] === ")");
+
+    if (char === "(") {
+      if (hasBefore && nextIsTwoPoints && secondIsOpenOrClose && thirdIsClose) {
+        // (:)
+        chars.splice(i, 1); //(
+        chars.splice(i, 1); //:
+        chars.splice(i, 1); //)
+        i = 0;
+      }
+    } else if (char === ")") {
+      if (chars.includes("(")) {
+        chars.splice(i, 1);
+        chars = chars.join("").replace("(", "").split("")
+        i = 0;
+      }
+    }
+  }
+
+  chars = getMessageWithoutEmojis(chars.join(""))
+
+  if (chars.includes("(") || chars.includes(")")) {
+    result = Result.DESBALANCEADO;
+  } else {
+    result = Result.BALANCEADO;
+  }
+  
   return result;
 }
 
@@ -48,14 +70,5 @@ function getMessageWithoutEmojis(message) {
       result = result.replaceAll(emoji, "")
     }
   })
-
-  return result;
-}
-
-function isClosedInParenthesis(message) {
-  let result = false;
-  if (message[0] === "(" && message[message.length - 1] === ")")
-    result = true;
-
   return result;
 }
